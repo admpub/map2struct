@@ -6,8 +6,9 @@ import (
 )
 
 type User struct {
-	Name string
-	ID   int
+	Name  string
+	ID    int
+	Email string `json:"e-mail"`
 }
 
 func TestScan(t *testing.T) {
@@ -15,11 +16,12 @@ func TestScan(t *testing.T) {
 	m := map[string]interface{}{}
 	m["Name"] = "test"
 	m["ID"] = 100
+	m["e-mail"] = `@`
 	user := new(User)
-	err := Scan(user, m)
+	err := Scan(user, m, `json`)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println("==>", user.ID, user.Name)
+	log.Println("==>", user.ID, user.Name, user.Email)
 }
