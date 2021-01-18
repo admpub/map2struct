@@ -9,7 +9,11 @@ import (
 	"time"
 )
 
-func Scan(sv interface{}, m map[string]interface{}) (err error) {
+func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err error) {
+	var tagName string
+	if len(tagNames) > 0 {
+		tagName = tagNames[0]
+	}
 	val := reflect.ValueOf(sv)
 	if val.Kind() != reflect.Ptr {
 		return errors.New("non-pointer passed to Unmarshal")
@@ -23,7 +27,15 @@ func Scan(sv interface{}, m map[string]interface{}) (err error) {
 
 	mcols := map[string]string{}
 	for i := 0; i < typ.NumField(); i++ {
-		mcols[strings.ToLower(typ.Field(i).Name)] = typ.Field(i).Name
+		f := typ.Field(i)
+		var mapKey string
+		if len(tagName) > 0 {
+			mapKey = f.Tag.Get(tagName)
+		}
+		if len(mapKey) == 0 {
+			mapKey = strings.ToLower(f.Name)
+		}
+		mcols[mapKey] = f.Name
 	}
 	for k, vv := range m {
 		if name, ok := mcols[strings.ToLower(k)]; ok {
