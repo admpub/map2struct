@@ -10,10 +10,6 @@ import (
 )
 
 func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err error) {
-	var tagName string
-	if len(tagNames) > 0 {
-		tagName = tagNames[0]
-	}
 	val := reflect.ValueOf(sv)
 	if val.Kind() != reflect.Ptr {
 		return errors.New("non-pointer passed to Unmarshal")
@@ -29,8 +25,13 @@ func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err err
 	for i := 0; i < typ.NumField(); i++ {
 		f := typ.Field(i)
 		var mapKey string
-		if len(tagName) > 0 {
-			mapKey = f.Tag.Get(tagName)
+		if len(tagNames) > 0 {
+			for _, tagName := range tagNames {
+				mapKey = f.Tag.Get(tagName)
+				if len(mapKey) > 0 {
+					break
+				}
+			}
 		}
 		if len(mapKey) == 0 {
 			mapKey = strings.ToLower(f.Name)
