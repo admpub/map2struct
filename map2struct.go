@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/admpub/copier"
 )
 
 func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err error) {
@@ -21,9 +23,9 @@ func Scan(sv interface{}, m map[string]interface{}, tagNames ...string) (err err
 		return errors.New("paramter error")
 	}
 
+	fields := copier.DeepFindFields(typ, v, ``, copier.AllNilFields)
 	mcols := map[string]string{}
-	for i := 0; i < typ.NumField(); i++ {
-		f := typ.Field(i)
+	for _, f := range fields {
 		var mapKey string
 		if len(tagNames) > 0 {
 			for _, tagName := range tagNames {

@@ -9,6 +9,11 @@ type User struct {
 	Name  string
 	ID    int
 	Email string `json:"e-mail"`
+	*Profile
+}
+
+type Profile struct {
+	Gender string
 }
 
 func TestScan(t *testing.T) {
@@ -17,11 +22,12 @@ func TestScan(t *testing.T) {
 	m["Name"] = "test"
 	m["ID"] = 100
 	m["e-mail"] = `@`
-	user := new(User)
+	m["Gender"] = `male`
+	user := &User{Profile: &Profile{}}
 	err := Scan(user, m, `json`)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println("==>", user.ID, user.Name, user.Email)
+	log.Println("==>", user.ID, user.Name, user.Email, user.Gender)
 }
